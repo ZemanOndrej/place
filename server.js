@@ -31,9 +31,28 @@ app.get('/', function(req, res) {
 /**
  * Global variables
  */
-let board = [];
-
 const colors = ['red', 'green', 'blue', 'magenta', 'purple', 'plum', 'orange', 'gray', 'black', 'white'];
+
+let board = [
+    {time: (new Date()).getTime(),
+    pixelX: 0,
+    pixelY:0,
+    author: "test",
+    pixelColor: colors[1]},
+    {time: (new Date()).getTime(),
+        pixelX: 1,
+        pixelY:1,
+        author: "test2",
+        pixelColor: colors[0]},
+
+    {time: (new Date()).getTime(),
+        pixelX: 4,
+        pixelY:5,
+        author: "test2",
+        pixelColor: colors[2]}
+
+];
+
 
 
 /**
@@ -50,19 +69,13 @@ io.on('connection', function (socket) {
     console.log((new Date()) + ' Connection from origin ' + socket.request.connection.remoteAddress + '.');
 
 
-
-
-    // let connection = request.accept(null, request.origin);
-    // const index = clients.push(connection) - 1;
-
-
     let userName = false;
     let pixelColor = false;
     let pixelX = false;
     let pixelY=false;
 
     console.log((new Date()) + ' Connection accepted.');
-    socket.emit("connected");
+    socket.emit("connected", {board:board});
 
 
     socket.on("start",(message)=>{
@@ -71,8 +84,8 @@ io.on('connection', function (socket) {
     });
 
 
-    socket.on('message',  (message)=> {
-        console.log((new Date()) + ' Received pixel from ' + userName + ': ' + message.utf8Data);
+    socket.on('pixel',  (pixel)=> {
+        console.log((new Date()) + ' Received pixel from ' + pixel.author + ': ' + pixel);
 
         board.filter((x) => x.pixelX !== pixelX && x.pixelY !== pixelY);
 
