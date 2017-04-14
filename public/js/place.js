@@ -12,15 +12,20 @@
     let input = document.querySelector('#input');
     let status = document.querySelector('#status');
     let submitName = document.querySelector('#submitName');
-    let overlay = document.querySelector("#overlay");
+    let inputBox = document.querySelector("#inputBox");
     let overlayShade = document.querySelector("#overlayShade");
     let colorPicker = document.querySelector("#colorPicker");
+    let mousePosSpan = document.querySelector("#mousePos");
+    let mousePixelPosSpan = document.querySelector("#mousePixelPos");
+
+
     let socket = io('http://localhost:1337');
     let canvas = document.querySelector("canvas");
     let pixSize = 50;
     let board = [];
     let context = canvas.getContext('2d');
     let mousePos = {x: 0, y: 0};
+    let mousePixelPos = {x: 0, y:0};
     const colors = ['red', 'green', 'blue', 'magenta', 'purple', 'plum', 'orange', 'gray', 'black', 'white'];
     let selectedColor = false;
     overlayShade.width = window.innerWidth;
@@ -60,11 +65,35 @@
         };
     };
 
-    let writeMessage = function (message) {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.font = '30px Calibri';
-        context.fillStyle = 'black';
-        context.fillText(message, 500, 20);
+    let getMousePixelPos = function (evt) {
+        let rect = canvas.getBoundingClientRect();
+        return {
+            x: Math.floor((evt.clientX - rect.left)/pixSize),
+            y: Math.floor((evt.clientY - rect.top)/pixSize)
+        }
+    };
+
+    let writeMousePosition = function () {
+        mousePixelPosSpan.innerHTML="("+mousePixelPos.x+","+mousePixelPos.y+")";
+        mousePosSpan.innerHTML="("+mousePos.x+" ,"+mousePos.y+" )";
+    };
+
+    let paintPixels = function () {
+        board.forEach((rec) => {
+            context.fillStyle = rec.pixelColor;
+            context.fillRect(rec.pixelX * pixSize, rec.pixelY * pixSize, pixSize, pixSize);
+
+            if(mousePixelPos.x===rec.pixelX && mousePixelPos.y === rec.pixelY){
+                context.fillStyle='rgba(0, 0, 0, 0.33)';
+                context.fillRect(rec.pixelX * pixSize, rec.pixelY * pixSize, pixSize, pixSize);
+                context.beginPath();
+                context.lineWidth="1px";
+                context.strokeStyle = "black";
+                context.rect((rec.pixelX * pixSize)+1, (rec.pixelY * pixSize)+1, pixSize-2, pixSize-2);
+                context.stroke();
+
+            }
+        });
     };
 
     let refreshCanvas = function () {
@@ -73,31 +102,34 @@
 
         const width = canvas.width;
         const height = canvas.height;
-        context.clearRect(0, 0, width, height);
-        writeMessage('Mouse position: ' + mousePos.x + ',' + mousePos.y);
 
-        board.forEach((rec) => {
-            context.fillStyle = rec.pixelColor;
-            context.fillRect(rec.pixelX * pixSize, rec.pixelY * pixSize, pixSize, pixSize);
-        });
-        window.requestAnimationFrame(refreshCanvas);
+        context.fillStyle="gray";
+        context.fillRect(0, 0, width, height);
+
+
+        paintPixels();
+
+        // window.requestAnimationFrame(refreshCanvas);
     };
-
 
     /**
      * Event Listeners
      */
-
     submitName.addEventListener("click", () => {
         name = input.value;
         input.setAttribute("disabled", "disabled");
         overlayShade.style.visibility = "hidden";
-        overlay.style.visibility = "hidden";
+        inputBox.style.visibility = "hidden";
         submitName.setAttribute("disabled", "disabled");
     });
 
     canvas.addEventListener('mousemove', function (evt) {
         mousePos = getMousePos(evt);
+        mousePixelPos = getMousePixelPos(evt);
+        writeMousePosition();
+        refreshCanvas();
+
+
     }, false);
 
     canvas.addEventListener('click', (event) => {
@@ -105,9 +137,11 @@
             socket.emit("pixel", {
                 pixelColor: selectedColor,
                 author: name,
-                pixelX: Math.floor(event.clientX / 50),
-                pixelY: Math.floor(event.clientY / 50)
+                pixelX: mousePixelPos.x,
+                pixelY: mousePixelPos.y
             });
+            console.log(event);
+
             // console.log({pixelColor:selectedColor,author:name,pixelX:event.clientX/50, pixelY:event.clientY/50});
         }
     }, false);
@@ -119,7 +153,7 @@
     socket.on("connected", (data) => {
         console.log("connected");
         board = data.board;
-        overlay.style.visibility = "visible";
+        inputBox.style.visibility = "visible";
         overlayShade.style.visibility = "visible";
         input.removeAttribute("disabled");
         submitName.removeAttribute("disabled");
@@ -132,7 +166,6 @@
     });
 
     socket.on("pixel", (data) => {
-        // console.log(data);
         let pixel = {
             pixelX: data.pixel.pixelX,
             pixelY: data.pixel.pixelY,
@@ -140,17 +173,10 @@
             time: data.pixel.time,
             pixelColor: data.pixel.pixelColor
         };
-        console.log(pixel);
         board.push(pixel);
-
     });
-
-
     /**
      * Start
      */
-
     refreshCanvas();
-
-
 })();

@@ -16,11 +16,11 @@
             position: relative;
         }
 
-        #container canvas, #overlay {
+        #container canvas, #inputBox {
             position: absolute;
         }
 
-        #overlay{
+        #inputBox{
             background-color: lightgray;
             position: fixed;
             top: 50%;
@@ -29,6 +29,7 @@
             transform: translate(-50%, -50%);
             border: 1px solid darkgray;
             padding: 20px 11px 20px 11px;
+            z-index: 102;
         }
         #overlayShade{
             width: 100%;
@@ -36,6 +37,7 @@
             background-color: black;
             opacity: 0.75;
             position: fixed;
+            z-index: 100;
         }
         #bottomPanel{
             position: fixed;
@@ -54,29 +56,43 @@
         }
         #colorPicker{
             -webkit-transform: translate(-50%, 0%);
-            transform: translate(-50%, 15%);
+            transform: translate(-50%, 10%);
             left:50%;
             border: solid grey 1px;
-            height: 35px;
+            height: 40px;
             position: absolute;
+        }
+        #cursorPosition{
+            color: white;
+            float: right;
+            height:100%;
+            width: 60px;
+            font-size:12px;
+
+        }
+        .position{
+            float: left;
         }
 
     </style>
 </head>
 <body>
 <div id="container">
-    <canvas id="board"></canvas>
+    <canvas id="board" oncontextmenu="return false;"></canvas>
     <div id="overlayShade"></div>
-    <div id="overlay" >
+    <div id="inputBox" >
         <span id="status">Connecting...</span>
         <input type="text" id="input" disabled="disabled"  title="name"/>
         <button id="submitName" type="submit" disabled="disabled" title="name" > Choose Name</button>
     </div>
-
-
     <div id="bottomPanel">
 
         <div id="colorPicker"></div>
+
+        <div id="cursorPosition">
+            <span class="position" id="mousePos"></span>
+            <span class="position" id="mousePixelPos"></span>
+        </div>
     </div>
 </div>
 

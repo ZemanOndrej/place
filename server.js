@@ -36,31 +36,22 @@ app.get('/', function (req, res) {
  */
 const colors = ['red', 'green', 'blue', 'magenta', 'purple', 'plum', 'orange', 'gray', 'black', 'white'];
 
-let board = [
-    {
-        time: (new Date()).getTime(),
-        pixelX: 0,
-        pixelY: 0,
-        author: "test",
-        pixelColor: colors[1]
-    },
-    {
-        time: (new Date()).getTime(),
-        pixelX: 1,
-        pixelY: 1,
-        author: "test2",
-        pixelColor: colors[0]
-    },
+let board = [];
 
-    {
-        time: (new Date()).getTime(),
-        pixelX: 4,
-        pixelY: 5,
-        author: "test2",
-        pixelColor: colors[2]
+const boardWidth = 20;
+const boardHeight = 20;
+
+for (let x = 0; x < boardWidth; x++) {
+    for (let y = 0; y < boardHeight; y++) {
+        board.push({
+            time: (new Date()).getTime(),
+            pixelX: x,
+            pixelY: y,
+            author: "default",
+            pixelColor: "white"
+        });
     }
-
-];
+}
 
 
 /**
@@ -74,7 +65,7 @@ io.on('connection', function (socket) {
     socket.on('pixel', (pixel) => {
         console.log((new Date()) + ' Received pixel from ' + pixel.author + ': ' + pixel);
 
-        board = board.filter((item) => ((item.pixelX !== pixel.pixelX) && (item.pixelY !== pixel.pixelY)));
+        board = board.filter((item) => !((item.pixelX === pixel.pixelX) && (item.pixelY === pixel.pixelY)));
         let obj = {
             time: (new Date()).getTime(),
             pixelX: pixel.pixelX,
