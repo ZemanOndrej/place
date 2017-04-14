@@ -118,10 +118,7 @@
 
     socket.on("connected", (data) => {
         console.log("connected");
-
         board = data.board;
-
-        console.log(board);
         overlay.style.visibility = "visible";
         overlayShade.style.visibility = "visible";
         input.removeAttribute("disabled");

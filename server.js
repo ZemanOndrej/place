@@ -73,14 +73,8 @@ io.on('connection', function (socket) {
 
     socket.on('pixel', (pixel) => {
         console.log((new Date()) + ' Received pixel from ' + pixel.author + ': ' + pixel);
-        // board = board.filter((x) => (x.pixelX !== pixel.pixelX) && (x.pixelY !== pixel.pixelY));
-        for(let i = 0;i<board.length;i++){
-            if(board[i].pixelY===pixel.pixelY && board[i].pixelX === pixel.pixelX){
-                board.remove(i);
-                break;
-            }
-        }
-        console.log(board.length);
+
+        board = board.filter((item) => ((item.pixelX !== pixel.pixelX) && (item.pixelY !== pixel.pixelY)));
         let obj = {
             time: (new Date()).getTime(),
             pixelX: pixel.pixelX,
@@ -89,6 +83,7 @@ io.on('connection', function (socket) {
             pixelColor: pixel.pixelColor
         };
         board.push(obj);
+        console.log(board.length);
         socket.emit("pixel", {pixel: obj});
     });
 
