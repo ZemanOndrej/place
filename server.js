@@ -87,23 +87,26 @@ io.on('connection', function (socket) {
     socket.on('pixel',  (pixel)=> {
         console.log((new Date()) + ' Received pixel from ' + pixel.author + ': ' + pixel);
 
-        board.filter((x) => x.pixelX !== pixelX && x.pixelY !== pixelY);
+        // board.filter((x) => x.pixelX !== pixelX && x.pixelY !== pixelY);
 
 
         let obj = {
             time: (new Date()).getTime(),
-            pixelX: pixelX,
-            pixelY:pixelY,
-            author: userName,
-            pixelColor: pixelColor
+            pixelX: pixel.pixelX,
+            pixelY:pixel.pixelY,
+            author: pixel.author,
+            pixelColor:pixel.pixelColor
         };
+        console.log(obj.pixelX);
 
         board.push(obj);
 
-        let json = JSON.stringify({type: 'message', data: obj});
-        for (let i = 0; i < clients.length; i++) {
-            clients[i].sendUTF(json);
-        }
+        socket.emit("pixel",{pixel:obj});
+        // let json = JSON.stringify({type: 'message', data: obj});
+        //
+        // for (let i = 0; i < clients.length; i++) {
+        //     clients[i].sendUTF(json);
+        // }
 
 
     });

@@ -5,22 +5,58 @@
     "use strict";
     window.WebSocket = window.WebSocket || window.MozWebSocket;
     let name = false;
-    let selectedColor = false;
     let content = document.querySelector('#content');
     let input = document.querySelector('#input');
     let status = document.querySelector('#status');
     let submitName = document.querySelector('#submitName');
     let overlay = document.querySelector("#overlay");
+    let overlayShade = document.querySelector("#overlayShade");
+    let colorPicker = document.querySelector("#colorPicker");
     let socket = io('http://localhost:1337');
     let canvas = document.querySelector("canvas");
     let pixSize =50;
     let board = [];
     let context = canvas.getContext('2d');
     let mousePos = {x:0,y:0};
+    const colors = ['red', 'green', 'blue', 'magenta', 'purple', 'plum', 'orange', 'gray', 'black', 'white'];
+    let selectedColor = false;
+    overlayShade.width = window.innerWidth;
+    overlayShade.height = window.innerHeight;
+
+
+    colors.forEach((color)=>{
+        let newColor = document.createElement("div");
+        newColor.id=color+"ColorPicker";
+        newColor.classList.add(color);
+        newColor.classList.add("color");
+        newColor.style.backgroundColor=color;
+        newColor.addEventListener("click",(event)=>
+        {
+
+            console.log(event.target.classList[0]);
+            let div = colorPicker.querySelector("."+event.target.classList[0]);
+
+            if(selectedColor!==false){
+                let oldColor = colorPicker.querySelector("."+selectedColor);
+                oldColor.style.border="solid 2px black"
+
+            }
+            div.style.border=" white 2px solid";
+            selectedColor = event.target.classList[0];
+
+        });
+        colorPicker.appendChild(newColor);
 
 
 
-    let getMousePos = function (canvas, evt) {
+    });
+
+
+
+
+
+
+    let getMousePos = function (evt) {
         let rect = canvas.getBoundingClientRect();
         return {
             x: evt.clientX - rect.left,
@@ -39,23 +75,25 @@
     submitName.addEventListener("click",()=>{
         name = input.value;
         input.setAttribute("disabled","disabled");
+        overlayShade.style.visibility="hidden";
         overlay.style.visibility="hidden";
         submitName.setAttribute("disabled","disabled");
         socket.emit("start",{UserName:name});
     });
 
     canvas.addEventListener('mousemove', function(evt) {
-        mousePos = getMousePos(canvas, evt);
+        mousePos = getMousePos( evt);
     }, false);
 
     socket.on("connected", (data)=> {
         console.log("connected" );
-        console.log(data);
+        // console.log(data);
 
         board = data.board;
         refreshCanvas();
 
         overlay.style.visibility="visible";
+        overlayShade.style.visibility="visible";
         input.removeAttribute("disabled");
         submitName.removeAttribute("disabled");
         status.innerHTML='Choose name:';
@@ -67,14 +105,20 @@
     });
 
     socket.on("pixel",(data)=> {
-        console.log(data + "pixel");
-        board.push({ x:data.pixelX, y:data.pixelColor, author: data.author, time: data.time, pixelColor:data.pixelColor});
+        // console.log(data);
+        let pixel = { pixelX:data.pixel.pixelX, pixelY:data.pixel.pixelY, author: data.pixel.author, time: data.pixel.time, pixelColor:data.pixel.pixelColor};
+        console.log(pixel);
+        board.push(pixel);
+
     });
 
 
-    // canvas.addEventListener('click', ()=> {
-    //
-    // }, false);
+    canvas.addEventListener('click', (event)=> {
+        if(selectedColor!==false){
+            socket.emit("pixel",{pixelColor:selectedColor,author:name,pixelX: Math.floor(event.clientX / 50), pixelY:Math.floor(event.clientY / 50)});
+            // console.log({pixelColor:selectedColor,author:name,pixelX:event.clientX/50, pixelY:event.clientY/50});
+        }
+    }, false);
 
 
     function refreshCanvas() {
