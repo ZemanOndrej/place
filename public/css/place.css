@@ -1,0 +1,83 @@
+body, html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#container {
+    position: relative;
+}
+
+#container canvas, #inputBox {
+    position: absolute;
+}
+
+#inputBox {
+    background-color: lightgray;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    border: 1px solid darkgray;
+    padding: 20px 11px 20px 11px;
+    z-index: 102;
+}
+
+#overlayShade {
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    opacity: 0.75;
+    position: fixed;
+    z-index: 100;
+}
+
+#bottomPanel {
+    position: fixed;
+    background-color: black;
+    width: 100%;
+    height: 50px;
+    top: 100%;
+    -webkit-transform: translate(0%, -100%);
+    transform: translate(0%, -100%);
+}
+
+.color {
+    height: 35px;
+    width: 35px;
+    float: left;
+    border: 2px black solid;
+}
+
+#colorPicker {
+    -webkit-transform: translate(-50%, 0%);
+    transform: translate(-50%, 10%);
+    left: 50%;
+    border: solid grey 1px;
+    height: 40px;
+    position: absolute;
+}
+
+#cursorPosition {
+    color: white;
+    float: right;
+    height: 100%;
+    width: 60px;
+    font-size: 12px;
+
+}
+
+.position {
+    float: left;
+}
+
+.color.selected {
+    border: white 2px solid;
+}
+
+.color {
+    border: solid 2px black;
+}

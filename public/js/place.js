@@ -9,7 +9,7 @@
     window.WebSocket = window.WebSocket || window.MozWebSocket;
     let name = false;
     let content = document.querySelector('#content');
-    let input = document.querySelector('#input');
+    let input = document.querySelector('#inputName');
     let status = document.querySelector('#status');
     let submitName = document.querySelector('#submitName');
     let inputBox = document.querySelector("#inputBox");
@@ -19,7 +19,9 @@
     let mousePixelPosSpan = document.querySelector("#mousePixelPos");
     let socket = io('http://localhost:1337');
     let canvas = document.querySelector("canvas");
-    let pixSize = 50;
+    let selectedPixSize = 1;
+    const pixSizes = [50, 20, 10];
+    let pixSize = pixSizes[selectedPixSize];
     let board = [];
     let boardSize = {width: 0, height: 0};
     let context = canvas.getContext('2d');
@@ -137,19 +139,30 @@
         refreshCanvas();
     }, false);
 
-    canvas.addEventListener('mousedown', () => {
-        leftButtonClicked.clicked = true;
-        leftButtonClicked.mouseMoved = false;
-        leftButtonClicked.startX = mousePos.x - screenLocation.x;
-        leftButtonClicked.startY = mousePos.y - screenLocation.y;
+    canvas.addEventListener('mousedown', (event) => {
+        if (event.button === 0) {
+            leftButtonClicked.clicked = true;
+            leftButtonClicked.mouseMoved = false;
+            leftButtonClicked.startX = mousePos.x - screenLocation.x;
+            leftButtonClicked.startY = mousePos.y - screenLocation.y;
+        }
     });
 
-    canvas.addEventListener('mouseup', () => {
-        leftButtonClicked.clicked = false;
+    canvas.addEventListener('mouseup', (event) => {
+        if (event.button === 2) {
+            if (selectedPixSize === pixSizes.length - 1) {
+                selectedPixSize = 0;
+            } else {
+                selectedPixSize++;
+            }
+            pixSize = pixSizes[selectedPixSize];
+            refreshCanvas();
+        } else if (event.button === 0) {
+            leftButtonClicked.clicked = false;
+        }
     });
 
-    canvas.addEventListener('click', (event) => {
-        console.log("click");
+    canvas.addEventListener('click', () => {
 
         if (selectedColor !== false &&
             !leftButtonClicked.mouseMoved &&
@@ -180,6 +193,7 @@
         overlayShade.style.visibility = "visible";
         input.removeAttribute("disabled");
         submitName.removeAttribute("disabled");
+        input.focus();
         status.innerHTML = 'Choose name:';
     });
 
@@ -202,7 +216,7 @@
 
 
     /**
-     * Init Colors
+     * Init colors
      */
 
     let colorToRGBA = function (color) {
@@ -240,7 +254,7 @@
 
 
     /**
-     * Start
+     * Init canvas refresh
      */
     refreshCanvas();
 })();

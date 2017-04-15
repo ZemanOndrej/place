@@ -36,17 +36,16 @@ app.get('/', function (req, res) {
  * Global variables
  */
 
-class Color{
-    constructor(r,g,b,a){
-        this.r=r;
-        this.g=g;
-        this.b=b;
-        this.a=a;
+class Color {
+    constructor(r, g, b, a) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
     }
-    toString(){
+    toString() {
         return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`
     }
-
 }
 
 let board = [];
@@ -61,7 +60,7 @@ for (let x = 0; x < boardWidth; x++) {
             pixelX: x,
             pixelY: y,
             author: "default",
-            pixelColor: new Color(255,255,255,255)
+            pixelColor: new Color(255, 255, 255, 255)
         });
     }
 }
@@ -73,7 +72,7 @@ for (let x = 0; x < boardWidth; x++) {
 io.on('connection', function (socket) {
     console.log((new Date()) + ' Connection from origin ' + socket.request.connection.remoteAddress + '.');
     console.log((new Date()) + ' Connection accepted.');
-    socket.emit("connected", {board: board, xSize:boardWidth, ySize: boardHeight});
+    socket.emit("connected", {board: board, xSize: boardWidth, ySize: boardHeight});
 
     socket.on('pixel', (pixel) => {
         console.log((new Date()) + ' Received pixel from ' + pixel.author + ': ' + pixel);
