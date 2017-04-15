@@ -31,10 +31,23 @@ app.get('/', function (req, res) {
 
 });
 
+
 /**
  * Global variables
  */
-const colors = ['red', 'green', 'blue', 'magenta', 'purple', 'plum', 'orange', 'gray', 'black', 'white'];
+
+class Color{
+    constructor(r,g,b,a){
+        this.r=r;
+        this.g=g;
+        this.b=b;
+        this.a=a;
+    }
+    toString(){
+        return `rgba(${this.r}, ${this.g}, ${this.b}, ${this.a})`
+    }
+
+}
 
 let board = [];
 
@@ -48,7 +61,7 @@ for (let x = 0; x < boardWidth; x++) {
             pixelX: x,
             pixelY: y,
             author: "default",
-            pixelColor: "white"
+            pixelColor: new Color(255,255,255,255)
         });
     }
 }
@@ -74,7 +87,6 @@ io.on('connection', function (socket) {
             pixelColor: pixel.pixelColor
         };
         board.push(obj);
-        console.log(board.length);
         socket.emit("pixel", {pixel: obj});
     });
 
