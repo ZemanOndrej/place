@@ -73,7 +73,7 @@ for (let x = 0; x < boardWidth; x++) {
 io.on('connection', function (socket) {
     console.log((new Date()) + ' Connection from origin ' + socket.request.connection.remoteAddress + '.');
     console.log((new Date()) + ' Connection accepted.');
-    socket.emit("connected", {board: board});
+    socket.emit("connected", {board: board, xSize:boardWidth, ySize: boardHeight});
 
     socket.on('pixel', (pixel) => {
         console.log((new Date()) + ' Received pixel from ' + pixel.author + ': ' + pixel);
