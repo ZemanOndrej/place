@@ -53,28 +53,28 @@
      *  Functions
      */
 
-    let getMousePos = function (evt) {
+    let getMousePos = (event) => {
         let rect = canvas.getBoundingClientRect();
         return {
-            x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top
         };
     };
 
-    let getMousePixelPos = function (evt) {
+    let getMousePixelPos = (event) => {
         let rect = canvas.getBoundingClientRect();
         return {
-            x: Math.floor((evt.clientX - rect.left - screenLocation.x) / pixSize),
-            y: Math.floor((evt.clientY - rect.top - screenLocation.y) / pixSize)
+            x: Math.floor((event.clientX - rect.left - screenLocation.x) / pixSize),
+            y: Math.floor((event.clientY - rect.top - screenLocation.y) / pixSize)
         }
     };
 
-    let writeMousePosition = function () {
+    let writeMousePosition = () => {
         mousePixelPosSpan.innerHTML = "(" + mousePixelPos.x + "," + mousePixelPos.y + ")";
         mousePosSpan.innerHTML = "(" + mousePos.x + " ," + mousePos.y + " )";
     };
 
-    let paintPixels = function () {
+    let paintPixels = () => {
         board.forEach((rec) => {
             context.fillStyle = rec.pixelColor.toString();
             context.fillRect(
@@ -97,7 +97,7 @@
         });
     };
 
-    let refreshCanvas = function () {
+    let refreshCanvas = () => {
         canvas.height = window.innerHeight;
         canvas.width = window.innerWidth;
 
@@ -117,7 +117,7 @@
      * Event Listeners
      */
 
-    submitName.addEventListener("click", () => {
+    submitName.addEventListener("click", (event) => {
         name = input.value;
         input.setAttribute("disabled", "disabled");
         overlayShade.style.visibility = "hidden";
@@ -126,18 +126,17 @@
 
     });
 
-    canvas.addEventListener('mousemove', function (evt) {
-        mousePos = getMousePos(evt);
-        mousePixelPos = getMousePixelPos(evt);
+    canvas.addEventListener('mousemove', (event) => {
+        mousePos = getMousePos(event);
+        mousePixelPos = getMousePixelPos(event);
         writeMousePosition();
         if (leftButtonClicked.clicked) {
             screenLocation.x = (mousePos.x - leftButtonClicked.startX);
             screenLocation.y = (mousePos.y - leftButtonClicked.startY);
             leftButtonClicked.mouseMoved = true;
-
         }
         refreshCanvas();
-    }, false);
+    });
 
     canvas.addEventListener('mousedown', (event) => {
         if (event.button === 0) {
@@ -162,7 +161,7 @@
         }
     });
 
-    canvas.addEventListener('click', () => {
+    canvas.addEventListener('click', (event) => {
 
         if (selectedColor !== false &&
             !leftButtonClicked.mouseMoved &&
@@ -178,7 +177,7 @@
             });
             // console.log(event.which);
         }
-    }, false);
+    });
 
     /**
      * Socket listeners
@@ -219,7 +218,7 @@
      * Init colors
      */
 
-    let colorToRGBA = function (color) {
+    let colorToRGBA = (color) => {
         let cvs, ctx;
         cvs = document.createElement('canvas');
         cvs.height = 1;

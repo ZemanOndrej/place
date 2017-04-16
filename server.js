@@ -12,28 +12,22 @@ process.title = 'node-place';
 const port = 1337;
 let express = require('express');
 let path = require('path');
-
 let app = express();
 app.use(express.static(path.join(__dirname, 'public')));
-
 let http = require('http').Server(app);
 let io = require('socket.io')(http);
 http.listen(port, "127.0.0.1", () => console.log("app is listening on port:" + port));
-
 
 /**
  Routes
  */
 
-
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname + '/public/views/place.html'));
-
 });
 
-
 /**
- * Global variables
+ * Global variables and init
  */
 
 class Color {
@@ -49,9 +43,8 @@ class Color {
 }
 
 let board = [];
-
-const boardWidth = 20;
-const boardHeight = 20;
+const boardWidth = 100;
+const boardHeight = 100;
 
 for (let x = 0; x < boardWidth; x++) {
     for (let y = 0; y < boardHeight; y++) {
@@ -65,11 +58,10 @@ for (let x = 0; x < boardWidth; x++) {
     }
 }
 
-
 /**
  * WebSocket Listener
  */
-io.on('connection', function (socket) {
+io.on('connection', (socket) => {
     console.log((new Date()) + ' Connection from origin ' + socket.request.connection.remoteAddress + '.');
     console.log((new Date()) + ' Connection accepted.');
     socket.emit("connected", {board: board, xSize: boardWidth, ySize: boardHeight});
@@ -89,6 +81,6 @@ io.on('connection', function (socket) {
         socket.emit("pixel", {pixel: obj});
     });
 
-    socket.on('disconnect', function (connection) {
+    socket.on('disconnect', (connection) => {
     });
 });
