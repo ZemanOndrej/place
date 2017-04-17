@@ -78,7 +78,7 @@ io.on('connection', (socket) => {
             pixelColor: pixel.pixelColor
         };
         board.push(obj);
-        socket.emit("pixel", {pixel: obj});
+        io.emit("pixel", {pixel: obj});
     });
 
     socket.on('disconnect', (connection) => {
